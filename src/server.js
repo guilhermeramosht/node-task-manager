@@ -13,6 +13,9 @@ const server = http.createServer(async (req, res) => {
     const match = req.url.match(route.path);
     req.params = { ...match.groups };
     return route.callback(req, res);
+  } else {
+    res.writeHead(404);
+    return res.end(JSON.stringify({ message: "Not found" }));
   }
 });
 

@@ -55,7 +55,18 @@ export const routes = [
   {
     path: buildRoute("/tasks/:id"),
     method: "DELETE",
-    callback: (req, res) => {},
+    callback: (req, res) => {
+      const { id } = req.params;
+      if (!id) return res.end(JSON.stringify({ message: "Nothing to delete" }));
+
+      const result = database.delete("tasks", id);
+
+      if (result) {
+        return res.end(JSON.stringify({ message: "Task deleted" }));
+      } else {
+        return res.end(JSON.stringify({ message: "Task not found" }));
+      }
+    },
   },
   {
     path: buildRoute("/tasks/:id/complete"),
