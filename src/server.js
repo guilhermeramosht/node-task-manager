@@ -1,6 +1,6 @@
 import http from "node:http";
 import { useBody } from "./middlewares/use-body.js";
-import { routes } from "./routes.js";
+import { routes } from "../src/routes.js";
 
 const server = http.createServer(async (req, res) => {
   await useBody(req);
@@ -10,8 +10,6 @@ const server = http.createServer(async (req, res) => {
   });
 
   if (route) route.callback(req, res);
-
-  console.log(req.body);
 });
 
 server.listen(3333, () => {
