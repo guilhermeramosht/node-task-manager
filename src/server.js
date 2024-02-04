@@ -1,6 +1,7 @@
 import http from "node:http";
 import { useBody } from "./middlewares/use-body.js";
 import { routes } from "../src/routes.js";
+import { notFoundException } from "./errors/not-found-exception.js";
 
 const server = http.createServer(async (req, res) => {
   await useBody(req);
@@ -14,8 +15,7 @@ const server = http.createServer(async (req, res) => {
     req.params = { ...match.groups };
     return route.callback(req, res);
   } else {
-    res.writeHead(404);
-    return res.end(JSON.stringify({ message: "Not found" }));
+    return notFoundException("Not found");
   }
 });
 

@@ -40,6 +40,26 @@ export class Database {
     return item;
   }
 
+  createMany(tableName, data) {
+    const table = this.#database[tableName];
+    const items = data.map((item) => ({
+      id: randomUUID(),
+      created_at: new Date(),
+      updated_at: new Date(),
+      ...item,
+    }));
+
+    if (Array.isArray(table)) {
+      table.push(...items);
+    } else {
+      this.#database[tableName] = items;
+    }
+
+    this.#persist();
+
+    return items;
+  }
+
   update(tableName, id, data) {
     const table = this.#database[tableName];
     const item = table.find((item) => item.id === id);

@@ -88,6 +88,8 @@ export const routes = [
   {
     path: buildRoute("/tasks/bulk-import"),
     method: "POST",
-    callback: (req, res) => {},
+    callback: (req, res) => {
+      return res.end("passing here");
+    },
   },
 ];
