@@ -1,4 +1,6 @@
 import { Database } from "./database/database.js";
+import { notFoundException } from "./errors/not-found-exception.js";
+import { unprocessableEntityException } from "./errors/unprocessable-entity-exception.js";
 import { buildRoute } from "./utils/build-route.js";
 
 const database = new Database();
@@ -29,7 +31,9 @@ export const routes = [
       const { title, description } = req.body;
 
       if (!title || !description) {
-        return res.end(400, "Title and description are required");
+        return unprocessableEntityException(
+          "Title and description are required"
+        );
       }
 
       const task = database.create("tasks", {
@@ -47,7 +51,7 @@ export const routes = [
     callback: (req, res) => {
       const { title, description } = req.body;
       if (!title && !description)
-        return res.end(JSON.stringify({ message: "Nothing to update" }));
+        return unprocessableEntityException(res, "Nothing to update");
       const task = database.update("tasks", req.params.id, req.body);
       return res.end(JSON.stringify(task));
     },
@@ -57,21 +61,29 @@ export const routes = [
     method: "DELETE",
     callback: (req, res) => {
       const { id } = req.params;
-      if (!id) return res.end(JSON.stringify({ message: "Nothing to delete" }));
+      if (!id) return unprocessableEntityException(res, "Nothing to delete");
 
       const result = database.delete("tasks", id);
 
       if (result) {
         return res.end(JSON.stringify({ message: "Task deleted" }));
       } else {
-        return res.end(JSON.stringify({ message: "Task not found" }));
+        return notFoundException(res, "Task not found");
       }
     },
   },
   {
     path: buildRoute("/tasks/:id/complete"),
     method: "PATCH",
-    callback: (req, res) => {},
+    callback: (req, res) => {
+      const { id } = req.params;
+      const task = database.update("tasks", id, { completed_at: new Date() });
+      if (!task) {
+        res.writeHead(404);
+        return notFoundException(res, "Task not found");
+      }
+      return res.end(JSON.stringify(task));
+    },
   },
   {
     path: buildRoute("/tasks/bulk-import"),
