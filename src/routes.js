@@ -1,4 +1,5 @@
 import { Database } from "./database/database.js";
+import { buildRoute } from "./utils/build-route.js";
 
 const database = new Database();
 
@@ -14,7 +15,7 @@ const database = new Database();
 
 export const routes = [
   {
-    path: "/tasks",
+    path: buildRoute("/tasks"),
     method: "GET",
     callback: (_req, res) => {
       const tasks = database.list("tasks");
@@ -22,7 +23,7 @@ export const routes = [
     },
   },
   {
-    path: "/tasks",
+    path: buildRoute("/tasks"),
     method: "POST",
     callback: (req, res) => {
       const { title, description } = req.body;
@@ -41,22 +42,28 @@ export const routes = [
     },
   },
   {
-    path: "/tasks/:id",
+    path: buildRoute("/tasks/:id"),
     method: "PUT",
-    callback: (req, res) => {},
+    callback: (req, res) => {
+      const { title, description } = req.body;
+      if (!title && !description)
+        return res.end(JSON.stringify({ message: "Nothing to update" }));
+      const task = database.update("tasks", req.params.id, req.body);
+      return res.end(JSON.stringify(task));
+    },
   },
   {
-    path: "/tasks/:id",
+    path: buildRoute("/tasks/:id"),
     method: "DELETE",
     callback: (req, res) => {},
   },
   {
-    path: "/tasks/:id/complete",
+    path: buildRoute("/tasks/:id/complete"),
     method: "PATCH",
     callback: (req, res) => {},
   },
   {
-    path: "/tasks/bulk-import",
+    path: buildRoute("/tasks/bulk-import"),
     method: "POST",
     callback: (req, res) => {},
   },

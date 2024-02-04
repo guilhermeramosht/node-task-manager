@@ -6,10 +6,14 @@ const server = http.createServer(async (req, res) => {
   await useBody(req);
 
   const route = routes.find((route) => {
-    return route.method === req.method && route.path === req.url;
+    return route.method === req.method && route.path.test(req.url);
   });
 
-  if (route) route.callback(req, res);
+  if (route) {
+    const match = req.url.match(route.path);
+    req.params = { ...match.groups };
+    return route.callback(req, res);
+  }
 });
 
 server.listen(3333, () => {

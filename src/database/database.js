@@ -39,4 +39,16 @@ export class Database {
 
     return item;
   }
+
+  update(tableName, id, data) {
+    const table = this.#database[tableName];
+    const item = table.find((item) => item.id === id);
+
+    if (!item) return null;
+
+    Object.assign(item, data, { updated_at: new Date() });
+
+    this.#persist();
+    return item;
+  }
 }
