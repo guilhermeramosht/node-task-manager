@@ -32,6 +32,7 @@ export const routes = [
 
       if (!title || !description) {
         return unprocessableEntityException(
+          res,
           "Title and description are required"
         );
       }
@@ -53,6 +54,7 @@ export const routes = [
       if (!title && !description)
         return unprocessableEntityException(res, "Nothing to update");
       const task = database.update("tasks", req.params.id, req.body);
+      if (!task) return notFoundException(res, "Task not found");
       return res.end(JSON.stringify(task));
     },
   },
@@ -83,13 +85,6 @@ export const routes = [
         return notFoundException(res, "Task not found");
       }
       return res.end(JSON.stringify(task));
-    },
-  },
-  {
-    path: buildRoute("/tasks/bulk-import"),
-    method: "POST",
-    callback: (req, res) => {
-      return res.end("passing here");
     },
   },
 ];

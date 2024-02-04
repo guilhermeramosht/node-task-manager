@@ -15,7 +15,7 @@ const server = http.createServer(async (req, res) => {
     req.params = { ...match.groups };
     return route.callback(req, res);
   } else {
-    return notFoundException("Not found");
+    return notFoundException(res, "Not found");
   }
 });
 
